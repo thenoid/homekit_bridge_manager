@@ -152,6 +152,55 @@ python3 homekit_bridge_manager.py generate
 sudo python3 homekit_bridge_manager.py apply
 ```
 
+## Tips & Lessons Learned
+
+### Virtual Switches to Exclude
+
+Many integrations create "virtual" switches that aren't physical devices and shouldn't be in HomeKit:
+
+- **unifi/unifiprotect** - Network device access controls, camera settings
+- **alexa_media** - Shuffle, repeat, do-not-disturb switches
+- **frigate** - Camera detection toggles (person, vehicle, motion)
+- **sonos** - Crossfade, loudness settings
+- **stateful_scenes** - Scene state tracking
+
+### LED Segment Patterns
+
+Different integrations use different segment naming:
+- **Govee/MQTT**: `_segment_001`, `_segment_002` (exclude these - too granular)
+- **WLED**: `_segment_1`, `_segment_2` (often worth keeping - named zones)
+
+The default pattern `_segment_\d{3}` excludes Govee but keeps WLED.
+
+### Entity Area Assignment
+
+Entities get their area from:
+1. Direct entity assignment (rare)
+2. **Parent device assignment** (common)
+
+So if entities show "no area", assign the area to their **device** in HA, not the entity.
+
+### Include Mode vs Exclude Mode
+
+HomeKit supports both:
+- **Exclude mode**: Include all lights/switches, then list exclusions
+- **Include mode**: Only include explicitly listed entities
+
+This tool uses **include mode** because it's cleaner - you specify exactly what you want rather than listing hundreds of things you don't want.
+
+### Create Bridges in HA First
+
+This tool updates existing bridges - it doesn't create them. Create bridges via:
+1. Settings > Devices & Services > Add Integration > HomeKit
+2. Select domains (light, switch)
+3. Name it to match your config.yaml
+
+The tool will then populate the entity lists.
+
+### Friendly Names Are Essential
+
+Entity IDs like `switch.plug_1_2` are meaningless. The `generate` command maps these to friendly names so you can see `switch.plug_1_2 = "Living Room Lamp"` when editing.
+
 ## Troubleshooting
 
 **Bridge not found**: Create it in HA first (Settings > Devices & Services > Add Integration > HomeKit)
@@ -161,6 +210,8 @@ sudo python3 homekit_bridge_manager.py apply
 **Entities missing**: Check `excluded_integrations` and `excluded_patterns` in config
 
 **Permission denied**: Run apply with `sudo`
+
+**Changes lost after HA restart**: HA was running during edit - always use the `apply` command which handles stop/start
 
 ## License
 
