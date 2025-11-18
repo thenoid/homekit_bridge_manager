@@ -1,0 +1,44 @@
+# HomeKit Bridge Manager Configuration Example
+# Copy this to config.yaml and customize for your setup
+
+# Home Assistant paths
+ha_config_path: /path/to/ha-config
+ha_service: home-assistant@homeassistant
+output_dir: .
+
+# Integrations to exclude (virtual switches, not physical devices)
+excluded_integrations:
+  - unifi           # Network device access controls
+  - unifiprotect    # Camera settings
+  - alexa_media     # Alexa shuffle/repeat/DND
+  - frigate         # Camera detection settings
+  - sonos           # Audio crossfade/loudness
+  - stateful_scenes # Scene state tracking
+
+# Patterns to exclude (regex)
+excluded_patterns:
+  - '_segment_\d{3}'  # Govee segments (001, 002, etc.)
+
+# Specific entities to always ignore
+ignored_entities: []
+  # - switch.some_device_i_dont_want
+  # - light.another_device_to_skip
+
+# Bridge definitions - map areas to bridges
+# Run 'analyze' command to get suggestions for your setup
+bridges:
+  - name: First Floor
+    areas:
+      - Kitchen
+      - Living Room
+      - Family Room
+
+  - name: Second Floor
+    areas:
+      - Master Bedroom
+      - Kids Bedroom
+      - Bathroom
+
+  - name: Garage
+    areas:
+      - Garage
