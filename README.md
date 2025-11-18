@@ -39,11 +39,28 @@ python3 homekit_bridge_manager.py apply --dry-run
 
 | Command | Description |
 |---------|-------------|
+| `analyze` | Analyze areas and suggest bridge groupings |
 | `init` | Create example config.yaml |
 | `generate` | Generate entity mapping from areas |
-| `apply` | Apply mapping to HA config (stops/starts HA) |
+| `apply` | Apply mapping to HA config (stops/starts HA automatically) |
 | `validate` | Check current bridge configuration |
 | `list` | List all HomeKit bridges and entry IDs |
+
+## Important: Home Assistant Stop/Start
+
+The `apply` command **automatically stops and starts Home Assistant** because:
+- HA config files (`.storage/`) can only be safely modified when HA is stopped
+- If modified while running, HA will overwrite your changes
+
+The command will:
+1. Stop HA (`sudo systemctl stop <ha_service>`)
+2. Create a backup of the config
+3. Update bridge configurations
+4. Start HA (`sudo systemctl start <ha_service>`)
+
+**This is why `sudo` is required for the apply command.**
+
+Use `--dry-run` to preview changes without stopping HA.
 
 ## Configuration
 
